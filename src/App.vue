@@ -1,7 +1,16 @@
 <template>
   <div id="app">
     <Navigation :user="user" @logout="logout" />
-    <router-view class="container" :user="user" :meetings="meetings" @logout="logout" @addMeeting="addMeeting" @deleteMeeting="deleteMeeting" />
+    <router-view
+      class="container"
+      :user="user"
+      :meetings="meetings"
+      :error="error"
+      @logout="logout"
+      @addMeeting="addMeeting"
+      @deleteMeeting="deleteMeeting"
+      @checkIn="checkIn"
+    />
   </div>
 </template>
 
@@ -15,6 +24,7 @@ export default {
   data: function () {
     return {
       user: null,
+      error: null,
       meetings: []
     }
   },
@@ -36,7 +46,7 @@ export default {
         .collection('meetings')
         .add({
           name: payload,
-          createdAd: Firebase.firestore.FieldValue.serverTimestamp()
+          createdAt: Firebase.firestore.FieldValue.serverTimestamp()
         })
     },
     deleteMeeting: function (payload) {
@@ -45,6 +55,30 @@ export default {
         .collection('meetings')
         .doc(payload)
         .delete()
+    },
+    checkIn: function (payload) {
+      db.collection('users')
+        .doc(payload.userID)
+        .collection('meetings')
+        .doc(payload.meetingID)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            db.collection('users')
+              .doc(payload.userID)
+              .collection('meetings')
+              .doc(payload.meetingID)
+              .collection('attendees')
+              .add({
+                displayName: payload.displayName,
+                eMail: payload.eMail,
+                createdAt: Firebase.firestore.FieldValue.serverTimestamp()
+              })
+              .then(() => this.$router.push('/'))
+          } else {
+            this.error = 'Sorry, no such meeting'
+          }
+        })
     }
   },
   mounted () {
