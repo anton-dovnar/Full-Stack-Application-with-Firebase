@@ -8,6 +8,9 @@
       </div>
     </div>
     <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellendus, excepturi laudantium porro assumenda dolorem laborum asperiores quos sequi corrupti, tempore accusantium debitis explicabo. Totam officia expedita, minima provident iusto nisi?</p>
+    <router-link class="btn btn-outline-primary me-2" to="/register" v-if="!user">Register</router-link>
+    <router-link class="btn btn-outline-primary me-2" to="/login" v-if="!user">Login</router-link>
+    <router-link class="btn btn-outline-primary" to="/meetings" v-if="user">Meetings</router-link>
   </div>
 </template>
 
