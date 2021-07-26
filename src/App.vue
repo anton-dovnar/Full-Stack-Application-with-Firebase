@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Navigation />
-    <router-view class="container" :user="user" />
+    <router-view class="container" :user="user" @logout="logout" />
   </div>
 </template>
 
@@ -19,6 +19,16 @@ export default {
   },
   components: {
     Navigation
+  },
+  methods: {
+    logout: function () {
+      Firebase.auth()
+        .signOut()
+        .then(() => {
+          this.user = null
+          this.$router.push('login')
+        })
+    }
   },
   mounted () {
     Firebase.auth().onAuthStateChanged(user => {
