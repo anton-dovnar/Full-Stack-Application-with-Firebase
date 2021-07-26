@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Navigation :user="user" @logout="logout" />
-    <router-view class="container" :user="user" :meetings="meetings" @logout="logout" @addMeeting="addMeeting" />
+    <router-view class="container" :user="user" :meetings="meetings" @logout="logout" @addMeeting="addMeeting" @deleteMeeting="deleteMeeting" />
   </div>
 </template>
 
@@ -38,6 +38,13 @@ export default {
           name: payload,
           createdAd: Firebase.firestore.FieldValue.serverTimestamp()
         })
+    },
+    deleteMeeting: function (payload) {
+      db.collection('users')
+        .doc(this.user.uid)
+        .collection('meetings')
+        .doc(payload)
+        .delete()
     }
   },
   mounted () {
