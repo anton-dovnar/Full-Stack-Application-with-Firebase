@@ -4,7 +4,7 @@
     <div
       class="row justify-content-center"
     >
-      <div class="col-md-8">
+      <div class="col-md-8" vi-if="user !== null && user.uid === userID">
         <h1 class="fw-light text-center">Attendees</h1>
 
         <div class="card bg-light mb-4">
@@ -15,16 +15,19 @@
                 placeholder="Search Attendees"
                 class="form-control"
                 v-model="searchQuery"
+                ref="searchQuery"
               />
               <button
                 class="btn btn-sm btn-outline-info"
                 title="Pick a random attendee"
+                @click="chooseRandom"
               >
                 <font-awesome-icon icon="random"></font-awesome-icon>
               </button>
               <button
                 class="btn btn-sm btn-outline-info"
                 title="Reset Search"
+                @click="resetQuery"
               >
                 <font-awesome-icon icon="undo"></font-awesome-icon>
               </button>
@@ -34,7 +37,7 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row flex-column justify-content-center align-items-center">
       <div
         class="col-8 col-sm-6 col-md-4 col-lg-3 mb-2 p-0 px-1"
         v-for="item in filteredAttendees"
@@ -77,6 +80,7 @@ export default {
   data: function () {
     return {
       attendees: [],
+      displayAttendees: [],
       searchQuery: '',
       userID: this.$route.params.userID,
       meetingID: this.$route.params.meetingID
@@ -88,7 +92,7 @@ export default {
   computed: {
     filteredAttendees: function () {
       const dataFilter = item => item.displayName.toLowerCase().match(this.searchQuery.toLowerCase()) && true
-      return this.attendees.filter(dataFilter)
+      return this.displayAttendees.filter(dataFilter)
     }
   },
   methods: {
@@ -126,6 +130,15 @@ export default {
           }
         })
       }
+    },
+    chooseRandom: function () {
+      const randomAttendee = Math.floor(Math.random() * this.attendees.length)
+      this.displayAttendees = [this.attendees[randomAttendee]]
+    },
+    resetQuery () {
+      this.displayAttendees = this.attendees
+      this.searchQuery = ''
+      this.$refs.searchQuery.focus()
     }
   },
   props: ['user'],
@@ -146,6 +159,7 @@ export default {
           })
         })
         this.attendees = snapData
+        this.displayAttendees = this.attendees
       })
   }
 }
